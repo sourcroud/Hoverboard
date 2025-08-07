@@ -1,9 +1,23 @@
 #include <Arduino.h>
 
+#include "iomasks.h"
+
+#include "PS2Controller.h"
+#include "Hoverboard.h"
+
+PS2Controller dualshock;
+Hoverboard movingObject;
+
 void setup() {
-// write your initialization code here
+    Serial.begin(9600);
+    Serial1.begin(19200);
+
+    dualshock.init(ps2clock, ps2command, ps2attention, ps2data, true, true);
+
 }
 
 void loop() {
-// write your code here
+    dualshock.update();
+    movingObject.sendCommand(dualshock.getSpeed(), dualshock.getSteer());
+    delay(20);
 }
