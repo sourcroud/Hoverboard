@@ -10,7 +10,7 @@
 
 class Hoverboard {
 public:
-    void sendCommand( int16_t speed, int16_t steer );
+    static void sendCommand( int16_t speed, int16_t steer );
 };
 
 

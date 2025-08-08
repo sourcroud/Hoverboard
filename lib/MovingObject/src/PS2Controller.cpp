@@ -47,18 +47,14 @@ void PS2Controller::init(int clock, int command, int attention, int data, bool p
 
 
 void PS2Controller::update() {
-    if( !ps2x.read_gamepad() ) {
-        speed = 0;
-        steer = 0;
-        return;
-    }
 
+    ps2x.read_gamepad();
     int x = ps2x.Analog(PSS_LX); // Left stick X-Axis
     int y = ps2x.Analog(PSS_LY); // Left stick Y-Axis
 
     // Normalize analog values (128 = full stop)
     steer = map( x, 0, 255, -1000, 1000 );
-    speed = map( 128 - (y - 128), -127, 127, -1000, 1000);
+    speed = map( y, 255, 0, -1000, 1000);
 }
 
 int16_t PS2Controller::getSpeed() const {

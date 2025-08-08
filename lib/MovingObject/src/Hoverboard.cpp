@@ -4,7 +4,7 @@
 
 #include "Hoverboard.h"
 
-void sendCommand( const int16_t speed, const int16_t steer ) {
+void Hoverboard::sendCommand( const int16_t speed, const int16_t steer ) {
     uint16_t checksum = 0xAAAA ^ (uint16_t)steer ^ (uint16_t)speed;
     uint8_t packet[8];
     packet[0] = 0xAA;
