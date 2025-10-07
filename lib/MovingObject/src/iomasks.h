@@ -5,6 +5,10 @@
 #ifndef IOMASKS_H
 #define IOMASKS_H
 
+//SoftwareSerial-Pins:
+#define softwareSerial_RX 7
+#define softwareSerial_TX 8
+
 //GamePad-Pins:
 // clock
 #define ps2clock 12

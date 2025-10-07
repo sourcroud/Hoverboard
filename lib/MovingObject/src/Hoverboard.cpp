@@ -4,6 +4,14 @@
 
 #include "Hoverboard.h"
 
+
+Hoverboard::Hoverboard()
+    :hoverSerial(softwareSerial_RX, softwareSerial_TX)
+{
+    hoverSerial.begin(19200);
+}
+
+
 void Hoverboard::sendCommand( const int16_t speed, const int16_t steer ) {
     uint16_t checksum = 0xAAAA ^ (uint16_t)steer ^ (uint16_t)speed;
     uint8_t packet[8];
@@ -16,5 +24,5 @@ void Hoverboard::sendCommand( const int16_t speed, const int16_t steer ) {
     packet[6] = checksum & 0xFF;
     packet[7] = (checksum >> 8) & 0xFF;
 
-    Serial1.write( packet, sizeof(packet) );
+    hoverSerial.write( packet, sizeof(packet) );
 }

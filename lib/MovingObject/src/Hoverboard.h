@@ -5,12 +5,16 @@
 #ifndef HOVERBOARD_H
 #define HOVERBOARD_H
 
-#include "PS2Controller.h"
+#include "iomasks.h"
 #include "stdint.h"
+#include "SoftwareSerial.h"
 
 class Hoverboard {
+private:
+    SoftwareSerial hoverSerial;
 public:
-    static void sendCommand( int16_t speed, int16_t steer );
+    void sendCommand( int16_t speed, int16_t steer );
+    Hoverboard();
 };
 
 

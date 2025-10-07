@@ -10,10 +10,7 @@ Hoverboard movingObject;
 
 void setup() {
     Serial.begin(9600);
-    Serial1.begin(19200);
-
     dualshock.init(ps2clock, ps2command, ps2attention, ps2data, true, true);
-
 }
 
 void loop() {
