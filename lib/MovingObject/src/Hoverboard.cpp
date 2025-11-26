@@ -2,13 +2,15 @@
 // Created by sourc on 06.08.2025.
 //
 
+
+//#include <HardwareSerial.h>
 #include "Hoverboard.h"
 
 
 Hoverboard::Hoverboard()
     :hoverSerial(softwareSerial_RX, softwareSerial_TX)
 {
-    hoverSerial.begin(19200);
+    hoverSerial.begin(9600);
 }
 
 

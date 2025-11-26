@@ -31,18 +31,21 @@ void PS2Controller::init(int clock, int command, int attention, int data, bool p
     else if(error == 3)
         Serial.println("Controller refusing to enter Pressures mode, may not support it. ");
 
-    type = ps2x.readType();
-    switch(type) {
-        case 0:
-            Serial.println("Unknown Controller type");
-        break;
-        case 1:
-            Serial.println("DualShock Controller Found");
-        break;
-        case 2:
-            Serial.println("GuitarHero Controller Found");
-        break;
-    }
+    if( error == 0 ) {
+        this->isInitialized = true;
+        type = ps2x.readType();
+        switch(type) {
+            case 0:
+                Serial.println("Unknown Controller type");
+                break;
+            case 1:
+                Serial.println("DualShock Controller Found");
+                break;
+            case 2:
+                Serial.println("GuitarHero Controller Found");
+                break;
+        }
+    } else this->isInitialized = false;
 }
 
 
@@ -53,8 +56,12 @@ void PS2Controller::update() {
     int y = ps2x.Analog(PSS_LY); // Left stick Y-Axis
 
     // Normalize analog values (128 = full stop)
-    steer = map( x, 0, 255, -1000, 1000 );
-    speed = map( y, 255, 0, -1000, 1000);
+    if( steer >= 138 || steer <= 118 ) {
+        steer = map(x, 0, 255, -1000, 1000);
+    } else steer = 0;
+    if( speed >= 138 || speed <= 118 ) {
+        speed = map(y, 255, 0, -1000, 1000);
+    } else speed = 0;
 }
 
 int16_t PS2Controller::getSpeed() const {
@@ -63,6 +70,10 @@ int16_t PS2Controller::getSpeed() const {
 
 int16_t PS2Controller::getSteer() const {
     return steer;
+}
+
+bool PS2Controller::getInitStatus() const {
+    return this->isInitialized;
 }
 
 

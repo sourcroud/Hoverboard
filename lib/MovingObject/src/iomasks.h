@@ -10,13 +10,13 @@
 #define softwareSerial_TX 8
 
 //GamePad-Pins:
-// clock
+// clock (blue)
 #define ps2clock 12
-// command
+// command (orange)
 #define ps2command 13
-// attention
+// attention (yellow)
 #define ps2attention 3
-// data
+// data (brown) via pullup
 #define ps2data 4
 
 #endif //IOMASKS_H

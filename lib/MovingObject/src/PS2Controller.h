@@ -12,11 +12,13 @@ private:
     PS2X ps2x;
     int16_t speed;
     int16_t steer;
+    bool isInitialized;
 public:
     void init(int clock, int command, int attention, int data, bool pressures, bool rumble);
     void update();
     int16_t getSpeed() const;
     int16_t getSteer() const;
+    bool getInitStatus() const;
 
     PS2Controller();
 };
