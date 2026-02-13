@@ -72,10 +72,10 @@ void PS2Controller::update() {
     // Y-Axis inverted
     if( y > 138 ) {
         // Stick moved UP
-        speed = map( y, 138, 255, 0, -1000);
+        speed = map( y, 138, 255, 0, 1000);
     } else if ( y < 118 ) {
         // Stick moved DOWN
-        speed = map( y, 118, 0, 0, 1000);
+        speed = map( y, 118, 0, 0, -1000);
     } else speed = 0;
 }
 
