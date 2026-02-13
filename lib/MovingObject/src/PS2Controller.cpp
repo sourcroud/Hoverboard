@@ -18,8 +18,7 @@ void PS2Controller::init(int clock, int command, int attention, int data, bool p
     error = ps2x.config_gamepad(clock, command, attention, data, pressures, rumble);   //GamePad(clock, command, attention, data, Pressures?, Rumble?)
 
     if(error == 0){
-        Serial.println("Found Controller, configured successful");
-        Serial.println("Go to www.billporter.info for updates and to report bugs.");
+        Serial.println("Found Controller, configured successfully.");
     }
 
     else if(error == 1)
@@ -36,15 +35,16 @@ void PS2Controller::init(int clock, int command, int attention, int data, bool p
         type = ps2x.readType();
         switch(type) {
             case 0:
-                Serial.println("Unknown Controller type");
+                Serial.println("Unknown controller type.");
                 break;
             case 1:
-                Serial.println("DualShock Controller Found");
+                Serial.println("DualShock-Controller found.");
                 break;
             case 2:
-                Serial.println("GuitarHero Controller Found");
+                Serial.println("GuitarHero-Controller found.");
                 break;
         }
+        Serial.println("Go to www.billporter.info for updates and to report bugs.");
     } else this->isInitialized = false;
 }
 
@@ -52,15 +52,30 @@ void PS2Controller::init(int clock, int command, int attention, int data, bool p
 void PS2Controller::update() {
 
     ps2x.read_gamepad();
-    int x = ps2x.Analog(PSS_LX); // Left stick X-Axis
-    int y = ps2x.Analog(PSS_LY); // Left stick Y-Axis
+    // Deadmanshandle due to missing boolean return statement of PS2X::read_gamepad()
+    if ( !ps2x.Button(PSB_L2) ) {
+        speed = 0;
+        steer = 0;
+        return;
+    }
+    const int x = ps2x.Analog(PSS_LX); // Left stick X-Axis
+    const int y = ps2x.Analog(PSS_LY); // Left stick Y-Axis
 
-    // Normalize analog values (128 = full stop)
-    if( steer >= 138 || steer <= 118 ) {
-        steer = map(x, 0, 255, -1000, 1000);
+    // Normalize analog values (128 equals zero position)
+    if( x > 138 ) {
+        // Stick moved RIGHT
+        steer = map( x, 138, 255, 0, 1000);
+    } else if( x < 118 ) {
+        // Stick moved LEFT
+        steer = map( x, 118, 0, 0, -1000 );
     } else steer = 0;
-    if( speed >= 138 || speed <= 118 ) {
-        speed = map(y, 255, 0, -1000, 1000);
+    // Y-Axis inverted
+    if( y > 138 ) {
+        // Stick moved UP
+        speed = map( y, 138, 255, 0, -1000);
+    } else if ( y < 118 ) {
+        // Stick moved DOWN
+        speed = map( y, 118, 0, 0, 1000);
     } else speed = 0;
 }
 

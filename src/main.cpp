@@ -7,10 +7,12 @@
 PS2Controller dualshock;
 Hoverboard movingObject;
 static unsigned long lastCommand = 0;
+static unsigned long lastSerialPrint = 0;
 
 void setup() {
     delay(1000);
     Serial.begin(SERIAL_BAUD);
+    Serial.println("...");
     Serial.println("Hoverboard Serial v1.0");
 
     movingObject.begin();
@@ -32,11 +34,18 @@ void printSerial(const int16_t speed, const int16_t steer) {
 void loop() {
     dualshock.update();
     movingObject.receive();
-    if( millis() - lastCommand > TIME_SEND ) {
+
+    const int16_t speed = dualshock.getSpeed();
+    const int16_t steer = dualshock.getSteer();
+
+    if( millis() - lastCommand > TIME_SEND_COMMAND ) {
         lastCommand = millis();
-        const int16_t speed = dualshock.getSpeed();
-        const int16_t steer = dualshock.getSteer();
         movingObject.sendCommand(speed, steer);
+    }
+    /*
+    if ( millis() - lastSerialPrint > TIME_PRINT_SERIAL ) {
+        lastSerialPrint = millis();
         printSerial(speed, steer);
     }
+    */
 }

@@ -29,45 +29,43 @@ void Hoverboard::sendCommand( const int16_t uSpeed, const int16_t uSteer ) {
 
 void Hoverboard::receive() {
     // Check if new data is available
-    if (hoverSerial.available()) {
+    while (hoverSerial.available()) {
+
         incomingByte = hoverSerial.read();
         // Construct the start frame from previous and current byte
         bufStartFrame = (static_cast<uint16_t>(incomingByte) << 8) | incomingBytePrev;
-    } else {
-        return;
-    }
 
-    // State Machine für das Protokoll
-    if (bufStartFrame == START_FRAME) {
-        // Neuer Frame erkannt, Reset Pointer
-        pData = reinterpret_cast<byte*>(&newFeedback);
-        *pData++ = incomingBytePrev;
-        *pData++ = incomingByte;
-        idx = 2; // Wir haben schon 2 Bytes (Start Frame)
-    }
-    else if (idx >= 2 && idx < sizeof(SerialFeedback)) {
-        // Daten sammeln
-        *pData++ = incomingByte;
-        idx++;
-    }
-
-    // Wenn Frame voll ist, Checksumme prüfen
-    if (idx == sizeof(SerialFeedback)) {
-        auto calculatedChecksum = static_cast<uint16_t>(
-            newFeedback.start ^ newFeedback.cmd1 ^ newFeedback.cmd2 ^
-            newFeedback.speedR_meas ^ newFeedback.speedL_meas ^
-            newFeedback.batVoltage ^ newFeedback.boardTemp ^ newFeedback.cmdLed);
-
-        if (newFeedback.start == START_FRAME && calculatedChecksum == newFeedback.checksum) {
-            // Valid data received -> copy to main feedback struct
-            memcpy(&feedback, &newFeedback, sizeof(SerialFeedback));
-        } else {
-            // Checksum Error handling (optional)
+        // State Machine for protocol
+        if (bufStartFrame == START_FRAME) {
+            // New Frame found, reset pointer
+            pData = reinterpret_cast<byte*>(&newFeedback);
+            *pData++ = incomingBytePrev;
+            *pData++ = incomingByte;
+            idx = 2; // 2 Bytes found already (Start Frame)
         }
-        idx = 0; // Reset für nächsten Durchlauf
-    }
+        else if (idx >= 2 && idx < sizeof(SerialFeedback)) {
+            // Collect data
+            *pData++ = incomingByte;
+            idx++;
+        }
 
-    incomingBytePrev = incomingByte;
+        // Compare checksums when frame is full
+        if (idx == sizeof(SerialFeedback)) {
+            auto calculatedChecksum = static_cast<uint16_t>(
+                newFeedback.start ^ newFeedback.cmd1 ^ newFeedback.cmd2 ^
+                newFeedback.speedR_meas ^ newFeedback.speedL_meas ^
+                newFeedback.batVoltage ^ newFeedback.boardTemp ^ newFeedback.cmdLed);
+
+            if (newFeedback.start == START_FRAME && calculatedChecksum == newFeedback.checksum) {
+                // Valid data received -> copy to main feedback struct
+                memcpy(&feedback, &newFeedback, sizeof(SerialFeedback));
+            } else {
+                // Checksum Error handling (optional)
+            }
+            idx = 0; // Reset for next loop-entry
+        }
+        incomingBytePrev = incomingByte;
+    }//while()
 }
 
 float Hoverboard::getBatteryVoltage() const {
