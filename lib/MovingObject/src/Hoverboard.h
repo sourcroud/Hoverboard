@@ -5,10 +5,9 @@
 #ifndef HOVERBOARD_H
 #define HOVERBOARD_H
 
-#include "iomasks.h"
+#include "config.h"
 #include <Arduino.h>
 //#include "stdint.h"
-#include "SoftwareSerial.h"
 
 typedef struct
     {
@@ -32,22 +31,21 @@ typedef struct{
 
 class Hoverboard {
 private:
-    SoftwareSerial hoverSerial;
+    Stream& _port;
     // Internal data handling
     SerialCommand command;
     SerialFeedback feedback;
     SerialFeedback newFeedback;
 
     // Global variables
-    uint8_t idx = 0;                        // Index for new data pointer
-    uint16_t bufStartFrame = 0;             // Buffer Start Frame
-    byte *pData;                            // Pointer declaration for the new received data
+    uint8_t idx;                        // Index for new data pointer
+    uint16_t bufStartFrame;             // Buffer Start Frame
+    byte *pData;                        // Pointer declaration for the new received data
     byte incomingByte;
     byte incomingBytePrev;
 
 public:
-    Hoverboard();
-    void begin();
+    Hoverboard(Stream& serialPort );
     void sendCommand( int16_t uSpeed, int16_t uSteer );
     void receive();
     float getBatteryVoltage() const;

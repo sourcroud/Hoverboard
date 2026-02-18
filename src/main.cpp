@@ -1,23 +1,21 @@
 #include <Arduino.h>
 
-#include "iomasks.h"
+#include "config.h"
 #include "PS2Controller.h"
 #include "Hoverboard.h"
 
 PS2Controller dualshock;
-Hoverboard movingObject;
+Hoverboard hoverboard(Serial1);
 static unsigned long lastCommand = 0;
 static unsigned long lastSerialPrint = 0;
 
 void setup() {
     delay(1000);
-    Serial.begin(SERIAL_BAUD);
+    Serial.begin(DEBUG_SERIAL_BAUD);
     Serial.println("...");
     Serial.println("Hoverboard Serial v1.0");
-
-    movingObject.begin();
+    Serial1.begin(HOVER_SERIAL_BAUD);
     pinMode(LED_BUILTIN, OUTPUT);
-
     do {
         dualshock.init(ps2clock, ps2command, ps2attention, ps2data, false, false);
     } while ( !dualshock.getInitStatus() );
@@ -27,25 +25,23 @@ void setup() {
 void printSerial(const int16_t speed, const int16_t steer) {
     Serial.print("Spd: "); Serial.print(speed);
     Serial.print(" | Str: "); Serial.print(steer);
-    Serial.print(" | Batt: "); Serial.print(movingObject.getBatteryVoltage());
+    Serial.print(" | Batt: "); Serial.print(hoverboard.getBatteryVoltage());
     Serial.println(" V");
 }
 
 void loop() {
     dualshock.update();
-    movingObject.receive();
-
+    hoverboard.receive();
     const int16_t speed = dualshock.getSpeed();
     const int16_t steer = dualshock.getSteer();
-
     if( millis() - lastCommand > TIME_SEND_COMMAND ) {
         lastCommand = millis();
-        movingObject.sendCommand(speed, steer);
+        hoverboard.sendCommand(speed, steer);
     }
-    /*
+#ifdef DEBUG_SERIAL
     if ( millis() - lastSerialPrint > TIME_PRINT_SERIAL ) {
         lastSerialPrint = millis();
         printSerial(speed, steer);
     }
-    */
+#endif
 }

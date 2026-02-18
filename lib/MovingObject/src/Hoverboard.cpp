@@ -6,13 +6,11 @@
 //#include <HardwareSerial.h>
 #include "Hoverboard.h"
 
-Hoverboard::Hoverboard()
-    :hoverSerial(softwareSerial_RX, softwareSerial_TX)
+Hoverboard::Hoverboard(Stream& serialPort )
+    :_port( serialPort )
 {
-}
-void Hoverboard::begin()
-{
-    hoverSerial.begin(HOVER_SERIAL_BAUD);
+    bufStartFrame = 0;
+    idx = 0;
 }
 
 void Hoverboard::sendCommand( const int16_t uSpeed, const int16_t uSteer ) {
@@ -23,15 +21,14 @@ void Hoverboard::sendCommand( const int16_t uSpeed, const int16_t uSteer ) {
     command.checksum = static_cast<uint16_t>(command.start ^ command.steer ^ command.speed);
 
     // Write to Serial
-    hoverSerial.write(reinterpret_cast<uint8_t*>(&command), sizeof(SerialCommand));
-
+    _port.write(reinterpret_cast<uint8_t*>(&command), sizeof(SerialCommand));
 }
 
 void Hoverboard::receive() {
     // Check if new data is available
-    while (hoverSerial.available()) {
+    while (_port.available()) {
 
-        incomingByte = hoverSerial.read();
+        incomingByte = _port.read();
         // Construct the start frame from previous and current byte
         bufStartFrame = (static_cast<uint16_t>(incomingByte) << 8) | incomingBytePrev;
 
@@ -69,9 +66,6 @@ void Hoverboard::receive() {
 }
 
 float Hoverboard::getBatteryVoltage() const {
-    // Rückgabewert ist meistens in ADC-Werten oder 100*Volt,
-    // das hängt von der Firmware-Einstellung ab.
-    // Oft ist es Volt * 100.
     return static_cast<float>(feedback.batVoltage) / 100.0f;
 }
 

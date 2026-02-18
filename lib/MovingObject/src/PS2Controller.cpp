@@ -9,6 +9,7 @@ PS2Controller::PS2Controller()
 {
     speed = 0;
     steer = 0;
+    isInitialized = false;
 }
 
 void PS2Controller::init(int clock, int command, int attention, int data, bool pressures, bool rumble) {
