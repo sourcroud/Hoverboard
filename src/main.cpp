@@ -16,9 +16,12 @@ void setup() {
     Serial.println("Hoverboard Serial v1.0");
     Serial1.begin(HOVER_SERIAL_BAUD);
     pinMode(LED_BUILTIN, OUTPUT);
-    do {
-        dualshock.init(ps2clock, ps2command, ps2attention, ps2data, false, false);
-    } while ( !dualshock.getInitStatus() );
+    Serial.println("Initiliazing Controller...");
+    while (!dualshock.getInitStatus())
+    {
+        dualshock.init();
+        delay(1000);
+    }
     digitalWrite(LED_BUILTIN, HIGH);
 }
 

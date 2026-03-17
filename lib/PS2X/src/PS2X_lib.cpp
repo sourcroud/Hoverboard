@@ -372,3 +372,16 @@ void PS2X::reconfig_gamepad(){
    sendCommandString(exit_config, sizeof(exit_config));
    
 }
+
+boolean PS2X::isConnected() const {
+	// Check if the mode byte is one of the valid PS2 modes
+	// 0x41 = Digital, 0x73 = Analog, 0x79 = Analog with pressures
+	if (
+		PS2data[1] == 0x41 ||
+		PS2data[1] == 0x73 ||
+		PS2data[1] == 0x79) {
+		return true;
+	}
+	// Return false if receiver is unplugged (0xFF) or gamepad is off (0x00)
+	return false;
+}

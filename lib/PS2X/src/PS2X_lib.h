@@ -160,43 +160,43 @@ GNU General Public License for more details.
 
 class PS2X {
 public:
-boolean Button(uint16_t);
-unsigned int ButtonDataByte();
-boolean NewButtonState();
-boolean NewButtonState(unsigned int);
-boolean ButtonPressed(unsigned int);
-boolean ButtonReleased(unsigned int);
-void read_gamepad();
-void read_gamepad(boolean, byte);
-byte readType();
-byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t);
-byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t, bool, bool);
-void enableRumble();
-bool enablePressures();
-byte Analog(byte);
+    boolean Button(uint16_t);
+    unsigned int ButtonDataByte();
+    boolean NewButtonState();
+    boolean NewButtonState(unsigned int);
+    boolean ButtonPressed(unsigned int);
+    boolean ButtonReleased(unsigned int);
+    void read_gamepad();
+    void read_gamepad(boolean, byte);
+    byte readType();
+    byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t);
+    byte config_gamepad(uint8_t, uint8_t, uint8_t, uint8_t, bool, bool);
+    void enableRumble();
+    bool enablePressures();
+    byte Analog(byte);
+    boolean isConnected() const;
 private:
-unsigned char _gamepad_shiftinout (char);
-unsigned char PS2data[21];
-void sendCommandString(byte*, byte);
-void reconfig_gamepad();
-unsigned char i;
-unsigned int last_buttons;
-unsigned int buttons;
-uint8_t maskToBitNum(uint8_t);
-uint8_t _clk_mask; 
-volatile uint8_t *_clk_oreg;
-uint8_t _cmd_mask; 
-volatile uint8_t *_cmd_oreg;
-uint8_t _att_mask; 
-volatile uint8_t *_att_oreg;
-uint8_t _dat_mask; 
-volatile uint8_t *_dat_ireg;
-unsigned long last_read;
-byte read_delay;
-byte controller_type;
-boolean en_Rumble;
-boolean en_Pressures;
-
+    unsigned char _gamepad_shiftinout (char);
+    unsigned char PS2data[21];
+    void sendCommandString(byte*, byte);
+    void reconfig_gamepad();
+    unsigned char i;
+    unsigned int last_buttons;
+    unsigned int buttons;
+    uint8_t maskToBitNum(uint8_t);
+    uint8_t _clk_mask;
+    volatile uint8_t *_clk_oreg;
+    uint8_t _cmd_mask;
+    volatile uint8_t *_cmd_oreg;
+    uint8_t _att_mask;
+    volatile uint8_t *_att_oreg;
+    uint8_t _dat_mask;
+    volatile uint8_t *_dat_ireg;
+    unsigned long last_read;
+    byte read_delay;
+    byte controller_type;
+    boolean en_Rumble;
+    boolean en_Pressures;
 };
 
 #endif

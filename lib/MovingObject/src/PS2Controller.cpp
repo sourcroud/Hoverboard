@@ -12,54 +12,51 @@ PS2Controller::PS2Controller()
     isInitialized = false;
 }
 
-void PS2Controller::init(int clock, int command, int attention, int data, bool pressures, bool rumble) {
-    int error = 0;
-    byte type = 0;
-    byte vibrate = 0;
-    error = ps2x.config_gamepad(clock, command, attention, data, pressures, rumble);   //GamePad(clock, command, attention, data, Pressures?, Rumble?)
-
+void PS2Controller::init() {
+    this->isInitialized = false;
+    int error = ps2x.config_gamepad(ps2clock, ps2command, ps2attention, ps2data, PRESSURE, RUMBLE);   //GamePad(clock, command, attention, data, Pressures?, Rumble?)
     if(error == 0){
-        Serial.println("Found Controller, configured successfully.");
-    }
-
-    else if(error == 1)
-        Serial.println("No controller found, check wiring, see readme.txt to enable debug. visit www.billporter.info for troubleshooting tips");
-
-    else if(error == 2)
-        Serial.println("Controller found but not accepting commands. see readme.txt to enable debug. Visit www.billporter.info for troubleshooting tips");
-
-    else if(error == 3)
-        Serial.println("Controller refusing to enter Pressures mode, may not support it. ");
-
-    if( error == 0 ) {
         this->isInitialized = true;
-        type = ps2x.readType();
+        Serial.println("Found Controller, configured successfully.");
+        byte type = ps2x.readType();
         switch(type) {
-            case 0:
-                Serial.println("Unknown controller type.");
-                break;
-            case 1:
-                Serial.println("DualShock-Controller found.");
-                break;
-            case 2:
-                Serial.println("GuitarHero-Controller found.");
-                break;
+        case 0:
+            Serial.println("Type: Unknown Controller.");
+            break;
+        case 1:
+            Serial.println("Type: DualShock Controller.");
+            break;
+        case 2:
+            Serial.println("Type: GuitarHero-Controller.");
+            break;
         }
         Serial.println("Go to www.billporter.info for updates and to report bugs.");
-    } else this->isInitialized = false;
+    } else if(error == 1)
+        Serial.println("No controller found, check wiring, see readme.txt to enable debug. visit www.billporter.info for troubleshooting tips");
+    else if(error == 2)
+        Serial.println("Controller found but not accepting commands. see readme.txt to enable debug. Visit www.billporter.info for troubleshooting tips");
+    else if(error == 3)
+        Serial.println("Controller refusing to enter Pressures mode, may not support it. ");
 }
 
-
 void PS2Controller::update() {
-
     ps2x.read_gamepad();
-    // Deadmanshandle due to missing boolean return statement of PS2X::read_gamepad()
-    if ( !ps2x.Button(PSB_L2) ) {
+    if( !ps2x.isConnected() ) {
         speed = 0;
         steer = 0;
+        /* Doesn't work entirely yet - If Dongle is reconnected, ps2x sends 8 bit max value (255), resulting in full throttle
+        static unsigned long lastReconnect = 0;
+        if (millis() - lastReconnect > 2000) {
+            lastReconnect = millis();
+            #ifdef DEBUG_SERIAL
+                Serial.println("Connection lost. Attempting to reconnect...");
+            #endif
+            this->init();
+        }
+        */
         return;
     }
-    const int x = ps2x.Analog(PSS_LX); // Left stick X-Axis
+    const int x = ps2x.Analog(PSS_RX); // Right stick X-Axis
     const int y = ps2x.Analog(PSS_LY); // Left stick Y-Axis
 
     // Normalize analog values (128 equals zero position)
@@ -92,6 +89,9 @@ bool PS2Controller::getInitStatus() const {
     return this->isInitialized;
 }
 
+bool PS2Controller::isConnected() const {
+    return ps2x.isConnected();
+}
 
 
 

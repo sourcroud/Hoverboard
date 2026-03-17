@@ -6,6 +6,7 @@
 #define CONTROLLER_H
 
 #include "PS2X_lib.h"
+#include "config.h"
 
 class PS2Controller {
 private:
@@ -14,12 +15,12 @@ private:
     int16_t steer;
     bool isInitialized;
 public:
-    void init(int clock, int command, int attention, int data, bool pressures, bool rumble);
+    void init();
     void update();
     int16_t getSpeed() const;
     int16_t getSteer() const;
     bool getInitStatus() const;
-
+    bool isConnected() const;
     PS2Controller();
 };
 
