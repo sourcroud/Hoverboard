@@ -27,10 +27,12 @@ typedef struct{
         int16_t  boardTemp;
         uint16_t cmdLed;
         uint16_t checksum;
-    } SerialFeedback;
+    } __attribute__((packed)) SerialFeedback;
 
 class Hoverboard {
 private:
+    unsigned long lastFeedbackPrint;
+    unsigned long lastCommandPrint;
     Stream& _port;
     // Internal data handling
     SerialCommand command;
@@ -48,8 +50,11 @@ public:
     Hoverboard(Stream& serialPort );
     void sendCommand( int16_t uSpeed, int16_t uSteer );
     void receive();
-    float getBatteryVoltage() const;
     int16_t getSpeedR() const;
+    int16_t getSpeedL() const;
+    float getBatteryVoltage() const;
+    int16_t getBoardTemp() const;
+    uint16_t getCmdLed() const;
 };
 
 

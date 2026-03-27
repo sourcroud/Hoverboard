@@ -7,6 +7,7 @@
 PS2Controller::PS2Controller()
     :ps2x()
 {
+    lastInputPrint = 0;
     speed = 0;
     steer = 0;
     isInitialized = false;
@@ -75,6 +76,11 @@ void PS2Controller::update() {
         // Stick moved DOWN
         speed = map( y, 118, 0, 0, -1000);
     } else speed = 0;
+#ifdef DEBUG_SERIAL
+    if (millis() - lastInputPrint > TIME_PRINT_SERIAL) {
+        printControllerInput();
+    }
+#endif
 }
 
 int16_t PS2Controller::getSpeed() const {
@@ -92,6 +98,13 @@ bool PS2Controller::getInitStatus() const {
 bool PS2Controller::isConnected() const {
     return ps2x.isConnected();
 }
+
+void PS2Controller::printControllerInput() const {
+    Serial.print("Spd: "); Serial.print(speed);
+    Serial.print(" Str: "); Serial.println(steer);
+}
+
+
 
 
 

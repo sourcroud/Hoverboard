@@ -10,6 +10,7 @@
 
 class PS2Controller {
 private:
+    unsigned long lastInputPrint;
     PS2X ps2x;
     int16_t speed;
     int16_t steer;
@@ -21,6 +22,7 @@ public:
     int16_t getSteer() const;
     bool getInitStatus() const;
     bool isConnected() const;
+    void printControllerInput() const;
     PS2Controller();
 };
 

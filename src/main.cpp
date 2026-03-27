@@ -7,10 +7,9 @@
 PS2Controller dualshock;
 Hoverboard hoverboard(Serial1);
 static unsigned long lastCommand = 0;
-static unsigned long lastSerialPrint = 0;
 
 void setup() {
-    delay(1000);
+    delay(3000);
     Serial.begin(DEBUG_SERIAL_BAUD);
     Serial.println("...");
     Serial.println("Hoverboard Serial v1.0");
@@ -25,13 +24,6 @@ void setup() {
     digitalWrite(LED_BUILTIN, HIGH);
 }
 
-void printSerial(const int16_t speed, const int16_t steer) {
-    Serial.print("Spd: "); Serial.print(speed);
-    Serial.print(" | Str: "); Serial.print(steer);
-    Serial.print(" | Batt: "); Serial.print(hoverboard.getBatteryVoltage());
-    Serial.println(" V");
-}
-
 void loop() {
     dualshock.update();
     hoverboard.receive();
@@ -41,10 +33,4 @@ void loop() {
         lastCommand = millis();
         hoverboard.sendCommand(speed, steer);
     }
-#ifdef DEBUG_SERIAL
-    if ( millis() - lastSerialPrint > TIME_PRINT_SERIAL ) {
-        lastSerialPrint = millis();
-        printSerial(speed, steer);
-    }
-#endif
 }
